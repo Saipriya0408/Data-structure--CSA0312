@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define RED 0
+#define BLACK 1
+
+// Define the structure of a node in the Red-Black Tree
+typedef struct Node {
+    int data;
+    int color;  // RED or BLACK
+    struct Node* left;
+    struct Node* right;
+    struct Node* parent;
+} Node;
+
+// Root of the Red-Black Tree
+Node* root = NULL;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->color = RED;  // New nodes are always red
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->parent = NULL;
+    return newNode;
+}
+
+// Function to insert a node into the tree
+void insert(Node* newNode) {
+    Node* y = NULL;
+    Node* x = root;
+
+    // Standard BST insert
+    while (x != NULL) {
+        y = x;
+        if (newNode->data < x->data)
+            x = x->left;
+        else
+            x = x->right;
+    }
+
+    newNode->parent = y;
+    if (y == NULL) {
+        root = newNode;  // Tree was empty, so newNode is the root
+    } else if (newNode->data < y->data) {
+        y->left = newNode;
+    } else {
+        y->right = newNode;
+    }
+}
+
+// Function to perform an inorder traversal of the tree
+void inorderTraversal(Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d (%s) ", root->data, root->color == RED ? "RED" : "BLACK");
+        inorderTraversal(root->right);
+    }
+}
+
+int main() {
+    // Insert nodes into the Red-Black Tree
+    int values[] = {20, 15, 25, 10, 5, 1, 30};
+    int n = sizeof(values) / sizeof(values[0]);
+
+    for (int i = 0; i < n; i++) {
+        Node* newNode = createNode(values[i]);
+        insert(newNode);
+    }
+
+    // Print the inorder traversal of the tree
+    printf("In-order traversal of the Red-Black Tree:\n");
+    inorderTraversal(root);
+    printf("\n");
+
+    return 0;
+}
