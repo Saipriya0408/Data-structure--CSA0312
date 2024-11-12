@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+    struct Node* parent;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = newNode->right = newNode->parent = NULL;
+    return newNode;
+}
+
+// Right Rotation
+void rightRotate(Node** root, Node* x) {
+    Node* y = x->left;
+    x->left = y->right;
+    if (y->right != NULL) {
+        y->right->parent = x;
+    }
+    y->parent = x->parent;
+    if (x->parent == NULL) {
+        *root = y;
+    } else if (x == x->parent->right) {
+        x->parent->right = y;
+    } else {
+        x->parent->left = y;
+    }
+    y->right = x;
+    x->parent = y;
+}
+
+// Left Rotation
+void leftRotate(Node** root, Node* x) {
+    Node* y = x->right;
+    x->right = y->left;
+    if (y->left != NULL) {
+        y->left->parent = x;
+    }
+    y->parent = x->parent;
+    if (x->parent == NULL) {
+        *root = y;
+    } else if (x == x->parent->left) {
+        x->parent->left = y;
+    } else {
+        x->parent->right = y;
+    }
+    y->left = x;
+    x->parent = y;
+}
+
+// Splay operation
+void splay(Node** root, Node* x) {
+    while (x->parent != NULL) {
+        if (x->parent->parent == NULL) {
+            if (x == x->parent->left) {
+                rightRotate(root, x->parent);
+            } else {
+                leftRotate(root, x->parent);
+            }
+        } else if (x == x->parent->left && x->parent == x->parent->parent->left) {
+            rightRotate(root, x->parent->parent);
+            rightRotate(root, x->parent);
+        } else if (x == x->parent->right && x->parent == x->parent->parent->right) {
+            leftRotate(root, x->parent->parent);
+            leftRotate(root, x->parent);
+        } else if (x == x->parent->right && x->parent == x->parent->parent->left) {
+            leftRotate(root, x->parent);
+            rightRotate(root, x->parent);
+        } else {
+            rightRotate(root, x->parent);
+            leftRotate(root, x->parent);
+        }
+    }
+}
+
+// Insert a new node and splay it to the root
+void insert(Node** root, int data) {
+    Node* newNode = createNode(data);
+    Node* y = NULL;
+    Node* x = *root;
+
+    // Insert like in a regular binary search tree
+    while (x != NULL) {
+        y = x;
+        if (data < x->data) {
+            x = x->left;
+        } else {
+            x = x->right;
+        }
+    }
+
+    newNode->parent = y;
+    if (y == NULL) {
+        *root = newNode;  // Tree was empty
+    } else if (data < y->data) {
+        y->left = newNode;
+    } else {
+        y->right = newNode;
+    }
+
+    // Splay the inserted node to the root
+    splay(root, newNode);
+}
+
+// Search for a node in the tree and splay it to the root
+Node* search(Node** root, int data) {
+    Node* x = *root;
+    while (x != NULL && x->data != data) {
+        if (data < x->data) {
+            x = x->left;
+        } else {
+            x = x->right;
+        }
+    }
+
+    if (x != NULL) {
+        splay(root, x);
+    }
+    return x;  // Returns NULL if not found
+}
+
+// In-order traversal to print the tree
+void inorderTraversal(Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d ", root->data);
+        inorderTraversal(root->right);
+    }
+}
+
+int main() {
+    Node* root = NULL;
+
+    // Insert nodes into the splay tree
+    insert(&root, 10);
+    insert(&root, 20);
+    insert(&root, 30);
+    insert(&root, 15);
+    insert(&root, 25);
+
+    printf("In-order traversal of the Splay Tree:\n");
+    inorderTraversal(root);
+    printf("\n");
+
+    // Search for a node and splay it
+    printf("Searching for node 15...\n");
+    Node* foundNode = search(&root, 15);
+    if (foundNode != NULL) {
+        printf("Found node: %d\n", foundNode->data);
+    } else {
+        printf("Node not found.\n");
+    }
+
+    // Print the tree again after search
+    printf("In-order traversal after search:\n");
+    inorderTraversal(root);
+    printf("\n");
+
+    return 0;
+}
