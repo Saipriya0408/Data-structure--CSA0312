@@ -1,0 +1,16 @@
+#include<stdio.h>
+
+int main() 
+{
+    int n = 5;  // Change this value to compute the factorial of any number
+    int factorial = 1;
+    
+    // Manually calculate the factorial of n (5 in this case)
+    for(int i = 1; i <= n; i++) 
+    {
+        factorial *= i;  // Multiply the current number with the factorial
+    }
+
+    printf("Factorial of %d is %d\n", n, factorial);
+    return 0;
+}
