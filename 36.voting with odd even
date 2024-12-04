@@ -1,0 +1,26 @@
+#include <stdio.h>
+int main() 
+{
+    int ages[] = {12, 19, 22, 34, 15, 18, 27, 16};
+    int n = sizeof(ages) / sizeof(ages[0]); 
+    int evenCount = 0, oddCount = 0, eligibleCount = 0;
+    for (int i = 0; i < n; i++) 
+    {
+        if (ages[i] >= 18) 
+        { 
+            eligibleCount++;
+            if (ages[i] % 2 == 0) 
+            {
+                evenCount++;
+            } 
+            else 
+            {
+                oddCount++;
+            }
+        }
+    }
+    printf("Number of eligible voters: %d\n", eligibleCount);
+    printf("Number of even ages among eligible voters: %d\n", evenCount);
+    printf("Number of odd ages among eligible voters: %d\n", oddCount);
+    return 0;
+}
